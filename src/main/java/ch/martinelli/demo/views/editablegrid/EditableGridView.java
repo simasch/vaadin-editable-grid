@@ -3,7 +3,6 @@ package ch.martinelli.demo.views.editablegrid;
 import ch.martinelli.demo.data.entity.SamplePerson;
 import ch.martinelli.demo.data.service.SamplePersonService;
 import ch.martinelli.demo.views.MainLayout;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
@@ -25,6 +24,8 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.Optional;
+
 @PageTitle("Editable Grid")
 @Route(value = "editable-grid", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
@@ -35,6 +36,9 @@ public class EditableGridView extends Div {
     private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
 
     private final BeanValidationBinder<SamplePerson> binder = new BeanValidationBinder<>(SamplePerson.class);
+
+    private Optional<Grid.Column<SamplePerson>> currentColumn = Optional.empty();
+    private Optional<SamplePerson> currentItem = Optional.empty();
 
     @Autowired
     public EditableGridView(SamplePersonService samplePersonService) {
@@ -104,8 +108,7 @@ public class EditableGridView extends Div {
             if (!editor.isOpen()) {
                 grid.getEditor().editItem(event.getItem());
 
-                Component editorComponent = event.getColumn().getEditorComponent();
-                if (editorComponent instanceof Focusable<?> focusable) {
+                if (event.getColumn().getEditorComponent() instanceof Focusable<?> focusable) {
                     focusable.focus();
                 }
             }
@@ -118,8 +121,21 @@ public class EditableGridView extends Div {
                     }
                     if (!editor.isOpen()) {
                         grid.getEditor().editItem(samplePerson);
+
+                        currentColumn.ifPresent(column -> {
+                            if (column.getEditorComponent() instanceof Focusable<?> focusable) {
+                                focusable.focus();
+                            }
+                        });
                     }
                 }));
+
+        grid.addCellFocusListener(event -> {
+            currentItem = event.getItem();
+            currentColumn = event.getColumn();
+        });
+
+        Shortcuts.addShortcutListener(grid, event -> currentItem.ifPresent(grid::select), Key.ENTER).listenOn(grid);
 
         Shortcuts.addShortcutListener(this, () -> {
             if (editor.isOpen()) {
