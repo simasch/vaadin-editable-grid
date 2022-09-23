@@ -38,7 +38,7 @@ public class EditableGridView extends Div {
     public EditableGridView(SamplePersonService samplePersonService) {
         addClassNames("master-detail-view");
 
-        Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+        var grid = new Grid<>(SamplePerson.class, false);
         var binder = new BeanValidationBinder<>(SamplePerson.class);
 
         // Create Grid Editor
@@ -99,36 +99,20 @@ public class EditableGridView extends Div {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        // If the item is clicked open the SamplePerson in the editor
-        grid.addItemClickListener(event -> {
-            if (editor.save()) {
-                editor.closeEditor();
-            }
-            if (!editor.isOpen()) {
-                grid.getEditor().editItem(event.getItem());
-
-                if (event.getColumn().getEditorComponent() instanceof Focusable<?> focusable) {
-                    focusable.focus();
-                }
-            }
-        });
-
         // If a row is selected open the SamplePerson in the editor
-        grid.addSelectionListener(event -> event.getFirstSelectedItem()
-                .ifPresent(samplePerson -> {
-                    if (editor.save()) {
-                        editor.closeEditor();
-                    }
-                    if (!editor.isOpen()) {
-                        grid.getEditor().editItem(samplePerson);
+        grid.addSelectionListener(event -> event.getFirstSelectedItem().ifPresent(samplePerson -> {
+            editor.save();
 
-                        currentColumn.ifPresent(column -> {
-                            if (column.getEditorComponent() instanceof Focusable<?> focusable) {
-                                focusable.focus();
-                            }
-                        });
+            if (!editor.isOpen()) {
+                grid.getEditor().editItem(samplePerson);
+
+                currentColumn.ifPresent(column -> {
+                    if (column.getEditorComponent() instanceof Focusable<?> focusable) {
+                        focusable.focus();
                     }
-                }));
+                });
+            }
+        }));
 
         grid.addCellFocusListener(event -> {
             // Store the item on cell focus. Used in the ENTER ShortcutListener
