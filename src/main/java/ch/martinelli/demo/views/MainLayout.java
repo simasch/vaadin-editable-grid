@@ -3,6 +3,7 @@ package ch.martinelli.demo.views;
 
 import ch.martinelli.demo.components.appnav.AppNav;
 import ch.martinelli.demo.components.appnav.AppNavItem;
+import ch.martinelli.demo.views.editablegrid.EditableGridView;
 import ch.martinelli.demo.views.masterdetail.MasterDetailView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -52,6 +53,7 @@ public class MainLayout extends AppLayout {
         // For documentation, visit https://github.com/vaadin/vcf-nav#readme
         AppNav nav = new AppNav();
 
+        nav.addItem(new AppNavItem("Editable Grid", EditableGridView.class, "la la-columns"));
         nav.addItem(new AppNavItem("Master-Detail", MasterDetailView.class, "la la-columns"));
 
         return nav;

@@ -8,6 +8,7 @@
     "@polymer/iron-meta": "3.0.1",
     "@polymer/iron-resizable-behavior": "3.0.1",
     "@polymer/polymer": "3.5.1",
+    "@vaadin-component-factory/vcf-nav": "1.0.6",
     "@vaadin/accordion": "23.2.1",
     "@vaadin/app-layout": "23.2.1",
     "@vaadin/avatar": "23.2.1",
@@ -118,6 +119,7 @@
     "@vaadin/virtual-list": "23.2.1",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.28.0",
+    "line-awesome": "1.3.0",
     "lit": "2.3.0",
     "proj4": "2.8.0"
   },
@@ -253,7 +255,9 @@
     "@polymer/polymer": "$@polymer/polymer",
     "date-fns": "$date-fns",
     "@vaadin/multi-select-combo-box": "$@vaadin/multi-select-combo-box",
-    "proj4": "$proj4"
+    "proj4": "$proj4",
+    "@vaadin-component-factory/vcf-nav": "$@vaadin-component-factory/vcf-nav",
+    "line-awesome": "$line-awesome"
   },
   "vaadin": {
     "dependencies": {
@@ -263,6 +267,7 @@
       "@polymer/iron-meta": "3.0.1",
       "@polymer/iron-resizable-behavior": "3.0.1",
       "@polymer/polymer": "3.5.1",
+      "@vaadin-component-factory/vcf-nav": "1.0.6",
       "@vaadin/accordion": "23.2.1",
       "@vaadin/app-layout": "23.2.1",
       "@vaadin/avatar": "23.2.1",
@@ -372,6 +377,7 @@
       "@vaadin/virtual-list": "23.2.1",
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.28.0",
+      "line-awesome": "1.3.0",
       "lit": "2.3.0",
       "proj4": "2.8.0"
     },
@@ -390,6 +396,6 @@
       "workbox-core": "6.5.0",
       "workbox-precaching": "6.5.0"
     },
-    "hash": "04406105025eabf9ba258930407548456a9ffb740fe100a52366bb01c211f75f"
+    "hash": "041eb08c6c1b65eb04cdbe7b8acdad6c990611797ec5064d31ebaecb397df33e"
   }
 }
