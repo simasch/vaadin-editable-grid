@@ -3,6 +3,8 @@ package ch.martinelli.demo.views.editablegrid;
 import ch.martinelli.demo.data.entity.SamplePerson;
 import ch.martinelli.demo.data.service.SamplePersonService;
 import ch.martinelli.demo.views.MainLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -45,6 +47,12 @@ public class EditableGridView extends Div {
         // Create Grid Editor
         editor = grid.getEditor();
         editor.setBinder(binder);
+        editor.setBuffered(true);
+
+        editor.addSaveListener(event -> {
+            SamplePerson item = event.getItem();
+            samplePersonService.update(item);
+        });
 
         // Configure Grid
         var colFirstName = grid.addColumn("firstName");
@@ -93,22 +101,28 @@ public class EditableGridView extends Div {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
-        // when a row is selected or deselected, populate form
-        grid.asSingleSelect().addValueChangeListener(event -> {
+        grid.addItemClickListener(event -> {
             closeEditorAndSave();
-            grid.getEditor().editItem(event.getValue());
+            grid.getEditor().editItem(event.getItem());
+
+            Component editorComponent = event.getColumn().getEditorComponent();
+            if (editorComponent instanceof Focusable<?> focusable) {
+                focusable.focus();
+            }
         });
 
-        Shortcuts.addShortcutListener(this, this::closeEditorAndSave, Key.ENTER)
-                .listenOn(txtFirstName, txtLastName, txtEmail, txtPhone, dpDateOfBirth, txtOccupation, cbImportant);
+        Shortcuts.addShortcutListener(this, () -> {
+            if (editor.isOpen()) {
+                editor.cancel();
+            }
+        }, Key.ESCAPE).listenOn(grid);
 
         add(grid);
     }
 
     private void closeEditorAndSave() {
-        if (editor.isOpen()) {
-            samplePersonService.update(binder.getBean());
-            editor.cancel();
+        if (editor.save()) {
+            editor.closeEditor();
         }
     }
 
