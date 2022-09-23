@@ -11,7 +11,6 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.textfield.TextField;
@@ -32,11 +31,6 @@ import java.util.Optional;
 @Uses(Icon.class)
 public class EditableGridView extends Div {
 
-    private final Editor<SamplePerson> editor;
-    private final Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
-
-    private final BeanValidationBinder<SamplePerson> binder = new BeanValidationBinder<>(SamplePerson.class);
-
     private Optional<Grid.Column<SamplePerson>> currentColumn = Optional.empty();
     private Optional<SamplePerson> currentItem = Optional.empty();
 
@@ -44,8 +38,11 @@ public class EditableGridView extends Div {
     public EditableGridView(SamplePersonService samplePersonService) {
         addClassNames("master-detail-view");
 
+        Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
+        var binder = new BeanValidationBinder<>(SamplePerson.class);
+
         // Create Grid Editor
-        editor = grid.getEditor();
+        var editor = grid.getEditor();
         editor.setBinder(binder);
         editor.setBuffered(true);
 
