@@ -36,12 +36,8 @@ public class EditableGridView extends Div {
 
     private final BeanValidationBinder<SamplePerson> binder = new BeanValidationBinder<>(SamplePerson.class);
 
-    private final SamplePersonService samplePersonService;
-
     @Autowired
     public EditableGridView(SamplePersonService samplePersonService) {
-        this.samplePersonService = samplePersonService;
-
         addClassNames("master-detail-view");
 
         // Create Grid Editor
@@ -102,14 +98,28 @@ public class EditableGridView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         grid.addItemClickListener(event -> {
-            closeEditorAndSave();
-            grid.getEditor().editItem(event.getItem());
+            if (editor.save()) {
+                editor.closeEditor();
+            }
+            if (!editor.isOpen()) {
+                grid.getEditor().editItem(event.getItem());
 
-            Component editorComponent = event.getColumn().getEditorComponent();
-            if (editorComponent instanceof Focusable<?> focusable) {
-                focusable.focus();
+                Component editorComponent = event.getColumn().getEditorComponent();
+                if (editorComponent instanceof Focusable<?> focusable) {
+                    focusable.focus();
+                }
             }
         });
+
+        grid.addSelectionListener(event -> event.getFirstSelectedItem()
+                .ifPresent(samplePerson -> {
+                    if (editor.save()) {
+                        editor.closeEditor();
+                    }
+                    if (!editor.isOpen()) {
+                        grid.getEditor().editItem(samplePerson);
+                    }
+                }));
 
         Shortcuts.addShortcutListener(this, () -> {
             if (editor.isOpen()) {
@@ -118,12 +128,6 @@ public class EditableGridView extends Div {
         }, Key.ESCAPE).listenOn(grid);
 
         add(grid);
-    }
-
-    private void closeEditorAndSave() {
-        if (editor.save()) {
-            editor.closeEditor();
-        }
     }
 
 }
