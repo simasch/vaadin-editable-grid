@@ -49,6 +49,7 @@ public class EditableGridView extends Div {
         editor.setBinder(binder);
         editor.setBuffered(true);
 
+        // Save Listener to save the changed SamplePerson
         editor.addSaveListener(event -> {
             SamplePerson item = event.getItem();
             samplePersonService.update(item);
@@ -101,6 +102,7 @@ public class EditableGridView extends Div {
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
+        // If the item is clicked open the SamplePerson in the editor
         grid.addItemClickListener(event -> {
             if (editor.save()) {
                 editor.closeEditor();
@@ -114,6 +116,7 @@ public class EditableGridView extends Div {
             }
         });
 
+        // If a row is selected open the SamplePerson in the editor
         grid.addSelectionListener(event -> event.getFirstSelectedItem()
                 .ifPresent(samplePerson -> {
                     if (editor.save()) {
@@ -131,13 +134,17 @@ public class EditableGridView extends Div {
                 }));
 
         grid.addCellFocusListener(event -> {
+            // Store the item on cell focus. Used in the ENTER ShortcutListener
             currentItem = event.getItem();
+            // Store the current column. Used in the SelectionListener to focus the editor component
             currentColumn = event.getColumn();
         });
 
+        // Select row on enter
         Shortcuts.addShortcutListener(grid, event -> currentItem.ifPresent(grid::select), Key.ENTER).listenOn(grid);
 
-        Shortcuts.addShortcutListener(this, () -> {
+        // Cancel the editor on Escape
+        Shortcuts.addShortcutListener(grid, () -> {
             if (editor.isOpen()) {
                 editor.cancel();
             }
