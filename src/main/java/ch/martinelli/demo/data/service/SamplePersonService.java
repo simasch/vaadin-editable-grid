@@ -1,12 +1,14 @@
 package ch.martinelli.demo.data.service;
 
 import ch.martinelli.demo.data.entity.SamplePerson;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SamplePersonService {
@@ -32,6 +34,10 @@ public class SamplePersonService {
 
     public Page<SamplePerson> list(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    public Page<SamplePerson> list(Specification<SamplePerson> specification, Pageable pageable) {
+        return repository.findAll(specification, pageable);
     }
 
     public int count() {

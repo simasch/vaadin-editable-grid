@@ -1,9 +1,11 @@
 package ch.martinelli.demo.data.service;
 
 import ch.martinelli.demo.data.entity.SamplePerson;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface SamplePersonRepository extends JpaRepository<SamplePerson, UUID> {
+import java.util.UUID;
+
+public interface SamplePersonRepository extends JpaRepository<SamplePerson, UUID>, JpaSpecificationExecutor<SamplePerson> {
 
 }

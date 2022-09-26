@@ -1,6 +1,7 @@
 package ch.martinelli.demo.views.masterdetail;
 
 import ch.martinelli.demo.data.entity.SamplePerson;
+import ch.martinelli.demo.data.entity.SamplePerson_;
 import ch.martinelli.demo.data.service.SamplePersonService;
 import ch.martinelli.demo.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -13,6 +14,7 @@ import com.vaadin.flow.component.dependency.Uses;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.notification.Notification;
@@ -22,6 +24,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.LitRenderer;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -29,6 +32,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -40,6 +44,9 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
 
     private final String SAMPLEPERSON_ID = "samplePersonID";
     private final String SAMPLEPERSON_EDIT_ROUTE_TEMPLATE = "master-detail/%s/edit";
+
+    private final TextField firstNameFilter;
+    private final TextField lastNameFilter;
 
     private Grid<SamplePerson> grid = new Grid<>(SamplePerson.class, false);
 
@@ -63,6 +70,7 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
     @Autowired
     public MasterDetailView(SamplePersonService samplePersonService) {
         this.samplePersonService = samplePersonService;
+
         addClassNames("master-detail-view");
 
         // Create UI
@@ -74,23 +82,35 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
+        HeaderRow headerRow = grid.appendHeaderRow();
+
+        Grid.Column<SamplePerson> firstNameColumn = grid.addColumn("firstName");
+        firstNameFilter = new TextField("First Name");
+        firstNameFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        firstNameFilter.addValueChangeListener(event -> filter());
+        headerRow.getCell(firstNameColumn).setComponent(firstNameFilter);
+
+        Grid.Column<SamplePerson> lastNameColumn = grid.addColumn("lastName");
+        lastNameFilter = new TextField("First Name");
+        lastNameFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        lastNameFilter.addValueChangeListener(event -> filter());
+        headerRow.getCell(lastNameColumn).setComponent(lastNameFilter);
+
+        grid.addColumn("email");
+        grid.addColumn("phone");
+        grid.addColumn("dateOfBirth");
+        grid.addColumn("occupation");
         LitRenderer<SamplePerson> importantRenderer = LitRenderer.<SamplePerson>of(
-                "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
+                        "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
                         important -> important.isImportant()
                                 ? "var(--lumo-primary-text-color)"
                                 : "var(--lumo-disabled-text-color)");
 
-        grid.addColumn(importantRenderer).setHeader("Important").setAutoWidth(true);
+        grid.addColumn(importantRenderer).setHeader("Important");
 
         grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -132,6 +152,27 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
             }
         });
 
+    }
+
+    private void filter() {
+        grid.setItems(query ->
+                samplePersonService.list(createSpecifiation(), PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                        .stream());
+    }
+
+    private Specification<SamplePerson> createSpecifiation() {
+        // true = true used for chaining
+        Specification<SamplePerson> specification = (root, query, cb) -> cb.isTrue(cb.literal(true));
+
+        if (firstNameFilter.getValue().length() > 0) {
+            specification = specification.and((root, query, cb) ->
+                    cb.like(cb.upper(root.get(SamplePerson_.firstName)), "%" + firstNameFilter.getValue().toUpperCase() + "%"));
+        }
+        if (lastNameFilter.getValue().length() > 0) {
+            specification = specification.and((root, query, cb) ->
+                    cb.like(cb.upper(root.get(SamplePerson_.lastName)), "%" + lastNameFilter.getValue().toUpperCase() + "%"));
+        }
+        return specification;
     }
 
     @Override
@@ -206,6 +247,5 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
     private void populateForm(SamplePerson value) {
         this.samplePerson = value;
         binder.readBean(this.samplePerson);
-
     }
 }
