@@ -53,46 +53,45 @@ public class EditableGridView extends Div {
         });
 
         // Configure Grid
-        var colFirstName = grid.addColumn("firstName");
         var txtFirstName = new TextField();
+        txtFirstName.setWidthFull();
         binder.forField(txtFirstName).bind("firstName");
-        colFirstName.setEditorComponent(txtFirstName);
+        grid.addColumn("firstName").setEditorComponent(txtFirstName).setAutoWidth(true);
 
-        var colLastName = grid.addColumn("lastName");
         var txtLastName = new TextField();
+        txtLastName.setWidthFull();
         binder.forField(txtLastName).bind("lastName");
-        colLastName.setEditorComponent(txtLastName);
+        grid.addColumn("lastName").setEditorComponent(txtLastName).setAutoWidth(true);
 
-        var colEmail = grid.addColumn("email");
         var txtEmail = new TextField();
+        txtEmail.setWidthFull();
         binder.forField(txtEmail).bind("email");
-        colEmail.setEditorComponent(txtEmail);
+        grid.addColumn("email").setEditorComponent(txtEmail).setAutoWidth(true);
 
-        var colPhone = grid.addColumn("phone");
         var txtPhone = new TextField();
+        txtPhone.setWidthFull();
         binder.forField(txtPhone).bind("phone");
-        colPhone.setEditorComponent(txtPhone);
+        grid.addColumn("phone").setEditorComponent(txtPhone).setAutoWidth(true);
 
-        var colDateOfBirth = grid.addColumn("dateOfBirth");
         var dpDateOfBirth = new DatePicker();
+        dpDateOfBirth.setWidthFull();
         binder.forField(dpDateOfBirth).bind("dateOfBirth");
-        colDateOfBirth.setEditorComponent(dpDateOfBirth);
+        grid.addColumn("dateOfBirth").setEditorComponent(dpDateOfBirth).setAutoWidth(true);
 
-        var colOccupation = grid.addColumn("occupation");
         var txtOccupation = new TextField();
+        txtOccupation.setWidthFull();
         binder.forField(txtOccupation).bind("occupation");
-        colOccupation.setEditorComponent(txtOccupation);
+        grid.addColumn("occupation").setEditorComponent(txtOccupation).setAutoWidth(true);
 
+        var cbImportant = new Checkbox();
+        binder.forField(cbImportant).bind("important");
         var importantRenderer = LitRenderer.<SamplePerson>of(
                         "<vaadin-icon icon='vaadin:${item.icon}' style='width: var(--lumo-icon-size-s); height: var(--lumo-icon-size-s); color: ${item.color};'></vaadin-icon>")
                 .withProperty("icon", important -> important.isImportant() ? "check" : "minus").withProperty("color",
                         important -> important.isImportant()
                                 ? "var(--lumo-primary-text-color)"
                                 : "var(--lumo-disabled-text-color)");
-        var colImportant = grid.addColumn(importantRenderer).setHeader("Important");
-        var cbImportant = new Checkbox();
-        binder.forField(cbImportant).bind("important");
-        colImportant.setEditorComponent(cbImportant);
+        grid.addColumn(importantRenderer).setHeader("Important").setEditorComponent(cbImportant);
 
         grid.setItems(query -> samplePersonService.list(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
