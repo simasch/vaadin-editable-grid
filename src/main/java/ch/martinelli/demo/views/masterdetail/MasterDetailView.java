@@ -1,7 +1,6 @@
 package ch.martinelli.demo.views.masterdetail;
 
 import ch.martinelli.demo.data.entity.SamplePerson;
-import ch.martinelli.demo.data.entity.SamplePerson_;
 import ch.martinelli.demo.data.service.SamplePersonService;
 import ch.martinelli.demo.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -166,11 +165,11 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
 
         if (firstNameFilter.getValue().length() > 0) {
             specification = specification.and((root, query, cb) ->
-                    cb.like(cb.upper(root.get(SamplePerson_.firstName)), "%" + firstNameFilter.getValue().toUpperCase() + "%"));
+                    cb.like(cb.upper(root.get("firstName")), "%" + firstNameFilter.getValue().toUpperCase() + "%"));
         }
         if (lastNameFilter.getValue().length() > 0) {
             specification = specification.and((root, query, cb) ->
-                    cb.like(cb.upper(root.get(SamplePerson_.lastName)), "%" + lastNameFilter.getValue().toUpperCase() + "%"));
+                    cb.like(cb.upper(root.get("lastName")), "%" + lastNameFilter.getValue().toUpperCase() + "%"));
         }
         return specification;
     }
