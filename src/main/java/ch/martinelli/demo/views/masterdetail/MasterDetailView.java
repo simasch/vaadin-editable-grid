@@ -209,7 +209,12 @@ public class MasterDetailView extends Div implements BeforeEnterObserver {
         dateOfBirth = new DatePicker("Date Of Birth");
         occupation = new TextField("Occupation");
         important = new Checkbox("Important");
-        Component[] fields = new Component[]{firstName, lastName, email, phone, dateOfBirth, occupation, important};
+
+        TextField number = new TextField("Number");
+        number.setPattern("[0-9]\\.[0-9][0-9]");
+        number.setErrorMessage("Format must be 0.00");
+
+        Component[] fields = new Component[]{firstName, lastName, email, phone, dateOfBirth, occupation, important, number};
 
         formLayout.add(fields);
         editorDiv.add(formLayout);
