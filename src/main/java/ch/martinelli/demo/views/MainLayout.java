@@ -3,6 +3,7 @@ package ch.martinelli.demo.views;
 
 import ch.martinelli.demo.components.appnav.AppNav;
 import ch.martinelli.demo.components.appnav.AppNavItem;
+import ch.martinelli.demo.views.custommultiselect.CustomMultiselectView;
 import ch.martinelli.demo.views.editablegrid.EditableGridView;
 import ch.martinelli.demo.views.masterdetail.MasterDetailView;
 import ch.martinelli.demo.views.multiselect.MultiselectView;
@@ -57,6 +58,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new AppNavItem("Editable Grid", EditableGridView.class, "la la-columns"));
         nav.addItem(new AppNavItem("Master-Detail", MasterDetailView.class, "la la-columns"));
         nav.addItem(new AppNavItem("Multiselect", MultiselectView.class, "la la-columns"));
+        nav.addItem(new AppNavItem("Custom Multiselect", CustomMultiselectView.class, "la la-columns"));
 
         return nav;
     }

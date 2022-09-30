@@ -1,14 +1,24 @@
 package ch.martinelli.demo.data.entity;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.Objects;
+import java.util.UUID;
 
 @Entity
-public class SamplePerson extends AbstractEntity {
+public class SamplePerson {
 
+    @Id
+    @GeneratedValue
+    @Type(type = "uuid-char")
+    private UUID id;
     @NotBlank
     private String firstName;
 
@@ -26,6 +36,14 @@ public class SamplePerson extends AbstractEntity {
     private LocalDate dateOfBirth;
     private String occupation;
     private boolean important;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -83,4 +101,16 @@ public class SamplePerson extends AbstractEntity {
         this.important = important;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SamplePerson that = (SamplePerson) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

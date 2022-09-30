@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,6 +41,9 @@ public class SamplePersonService {
         return repository.findAll(specification, pageable);
     }
 
+    public List<SamplePerson> list() {
+        return repository.findAll();
+    }
     public int count() {
         return (int) repository.count();
     }
